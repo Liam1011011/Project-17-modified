@@ -1,0 +1,83 @@
+// Project 17 - Making a Binary Quiz Game
+
+long answer = 0;
+
+void setup()
+{
+  Serial.begin(9600);
+  randomSeed(analogRead(0));
+}
+  long A=0;
+  long B=0;
+  bool generate=1;
+  long Bin=0;
+
+void loop()
+  {
+  Serial.flush();
+  while(!Serial.available())
+  if(generate)
+    {
+    A=0;
+    B=0;
+    Bin=random(65535);
+    Serial.println();
+    Serial.print("What is this in decimal? ");
+    Serial.println(Bin, BIN);
+    generate=0;
+    getAnswer();
+    checkAnswer();
+    }
+
+  } 
+
+void getAnswer()
+{
+  // receive the answer from the player
+  Serial.flush();
+  while (Serial.available() == 0)
+  {
+     // do nothing until something comes into the serial buffer
+  }
+     // one character of serial data is available, begin calculating
+     while (Serial.available() > 0)
+  {
+    // move any previous digit to the next column on the left; in 
+    // other words, 1 becomes 10 while there is data in the buffer
+    answer = answer * 10;
+    // read the next number in the buffer and subtract the character '0' 
+    // from it to convert it to the actual integer number
+    A = Serial.read() - '0';
+    // add this digit into the accumulating value
+    answer = answer + A;
+    // allow a short delay for any more numbers to come into Serial.available
+    delay(5);
+  }
+  Serial.println("You entered: ");
+  Serial.println(answer);
+}
+
+void checkAnswer()
+{
+  // check the answer from the player and show the results
+  if (answer == Bin)    // Correct!
+  {
+    Serial.print("Correct! ");
+    Serial.print(answer, BIN);
+    Serial.print(" equals ");
+    Serial.println(Bin);
+    Serial.println();
+  }
+  else                     // Incorrect
+  {
+    Serial.print("Incorrect, ");
+    Serial.print(Bin, BIN);
+    Serial.print(" equals ");
+    Serial.println(Bin);
+    Serial.println();    
+  }
+  answer = 0;
+  delay(100);
+      generate=1;
+       // give the player time to review their answer
+}
